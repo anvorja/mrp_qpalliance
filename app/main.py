@@ -40,11 +40,11 @@ def create_app():
     # Configurar manejo de errores
     @app.errorhandler(404)
     def not_found(e):
-        return jsonify({"error": "Recurso no encontrado"}), 404
+        return jsonify({"error": f"Recurso no encontrado: {str(e)}"}), 404
 
     @app.errorhandler(500)
     def server_error(e):
-        return jsonify({"error": "Error interno del servidor"}), 500
+        return jsonify({"error": f"Error interno del servidor: {str(e)}"}), 500
 
     # Crear tablas en la base de datos
     Base.metadata.create_all(bind=engine)
@@ -53,6 +53,6 @@ def create_app():
 
 
 if __name__ == "__main__":
-    app = create_app()
+    flask_app = create_app()
     port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=os.getenv("DEBUG", "False").lower() == "true")
+    flask_app.run(host="0.0.0.0", port=port, debug=os.getenv("DEBUG", "False").lower() == "true")
