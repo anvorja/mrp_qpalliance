@@ -3,6 +3,7 @@ from flask import request, jsonify
 import re
 import bleach
 from functools import wraps
+from app.auth.auth import token_required as auth_token_required
 
 
 def sanitize_input(data):
@@ -43,24 +44,26 @@ def validate_input(data):
                 return False
     return True
 
+
 def protect_endpoint():
     """
-    Decorador para proteger endpoints validando y sanitizando las entradas.
+    Decorador para proteger endpoints verificando autenticación y
+    validando/sanitizando las entradas.
     """
-
     def decorator(f):
         @wraps(f)
-        def decorated_function(*args, **kwargs):
-            # Obtener datos de la solicitud
+        @auth_token_required
+        def decorated_function(current_user, *args, **kwargs):
+
             if request.is_json:
                 try:
                     data = request.get_json()
 
                     # Validar datos
                     if not validate_input(data):
-                        return jsonify(
-                            {
-                                "error": "Datos de entrada inválidos. Se ha detectado un posible intento de inyección."}), 400
+                        return jsonify({
+                            "error": "Datos de entrada inválidos. Se ha detectado un posible intento de inyección."
+                        }), 400
 
                     # Sanitizar datos
                     sanitized_data = sanitize_input(data)
@@ -85,10 +88,10 @@ def protect_endpoint():
                     if not validate_input(value):
                         return jsonify({"error": f"Parámetro de consulta '{key}' inválido."}), 400
 
-            return f(*args, **kwargs)
+            # Pasar el usuario autenticado a la función
+            return f(current_user, *args, **kwargs)
 
         return decorated_function
-
     return decorator
 
 def rate_limit(limit_per_minute=60):

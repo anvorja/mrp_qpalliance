@@ -50,6 +50,10 @@ def create_swagger_spec():
                 "description": "Operaciones con movimientos de inventario"
             },
             {
+                "name": "auth",
+                "description": "Operaciones de autenticación y gestión de usuarios"
+            },
+            {
                 "name": "health",
                 "description": "Verificación del estado de la API"
             }
@@ -80,6 +84,166 @@ def create_swagger_spec():
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            },
+
+            "/auth/register": {
+                "post": {
+                    "tags": ["auth"],
+                    "summary": "Registrar un nuevo usuario",
+                    "description": "Crea una nueva cuenta de usuario en el sistema",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserRegister"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Usuario registrado exitosamente",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UserResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Datos inválidos o usuario ya existente"
+                        },
+                        "500": {
+                            "description": "Error interno del servidor"
+                        }
+                    }
+                }
+            },
+
+            "/auth/login": {
+                "post": {
+                    "tags": ["auth"],
+                    "summary": "Iniciar sesión",
+                    "description": "Autentica un usuario y devuelve tokens de acceso y refresco",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserLogin"
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Inicio de sesión exitoso",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UserResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Credenciales inválidas o usuario inactivo"
+                        },
+                        "500": {
+                            "description": "Error interno del servidor"
+                        }
+                    }
+                }
+            },
+            "/auth/refresh": {
+                "post": {
+                    "tags": ["auth"],
+                    "summary": "Refrescar token",
+                    "description": "Refresca el token de acceso usando el token de refresco",
+                    "responses": {
+                        "200": {
+                            "description": "Token refrescado exitosamente",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Token refrescado exitosamente"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "Token de refresco inválido o expirado"
+                        },
+                        "500": {
+                            "description": "Error interno del servidor"
+                        }
+                    }
+                }
+            },
+
+            "/auth/logout": {
+                "post": {
+                    "tags": ["auth"],
+                    "summary": "Cerrar sesión",
+                    "description": "Cierra la sesión del usuario eliminando las cookies",
+                    "responses": {
+                        "200": {
+                            "description": "Sesión cerrada exitosamente",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Sesión cerrada exitosamente"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "/auth/me": {
+                "get": {
+                    "tags": ["auth"],
+                    "summary": "Perfil de usuario",
+                    "description": "Obtiene el perfil del usuario autenticado",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Perfil del usuario",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/UserProfile"
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "No autenticado"
+                        },
+                        "500": {
+                            "description": "Error interno del servidor"
                         }
                     }
                 }
@@ -193,6 +357,11 @@ def create_swagger_spec():
                     "tags": ["products"],
                     "summary": "Crea un nuevo producto",
                     "description": "Crea un nuevo producto en el inventario",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "requestBody": {
                         "required": True,
                         "content": {
@@ -216,6 +385,9 @@ def create_swagger_spec():
                         },
                         "400": {
                             "description": "Datos inválidos"
+                        },
+                        "401": {
+                            "description": "No autenticado"
                         },
                         "500": {
                             "description": "Error interno del servidor"
@@ -251,6 +423,11 @@ def create_swagger_spec():
                     "tags": ["categories"],
                     "summary": "Crea una nueva categoría",
                     "description": "Crea una nueva categoría de productos",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "requestBody": {
                         "required": True,
                         "content": {
@@ -274,6 +451,9 @@ def create_swagger_spec():
                         },
                         "400": {
                             "description": "Datos inválidos o categoría ya existente"
+                        },
+                        "401": {
+                            "description": "No autenticado"
                         },
                         "500": {
                             "description": "Error interno del servidor"
@@ -309,6 +489,11 @@ def create_swagger_spec():
                     "tags": ["locations"],
                     "summary": "Crea una nueva ubicación",
                     "description": "Crea una nueva ubicación de almacenamiento",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "requestBody": {
                         "required": True,
                         "content": {
@@ -332,6 +517,9 @@ def create_swagger_spec():
                         },
                         "400": {
                             "description": "Datos inválidos o ubicación ya existente"
+                        },
+                        "401": {
+                            "description": "No autenticado"
                         },
                         "500": {
                             "description": "Error interno del servidor"
@@ -367,6 +555,11 @@ def create_swagger_spec():
                     "tags": ["suppliers"],
                     "summary": "Crea un nuevo proveedor",
                     "description": "Crea un nuevo proveedor",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "requestBody": {
                         "required": True,
                         "content": {
@@ -390,6 +583,9 @@ def create_swagger_spec():
                         },
                         "400": {
                             "description": "Datos inválidos o proveedor ya existente"
+                        },
+                        "401": {
+                            "description": "No autenticado"
                         },
                         "500": {
                             "description": "Error interno del servidor"
@@ -457,6 +653,11 @@ def create_swagger_spec():
                     "tags": ["movements"],
                     "summary": "Crea un nuevo movimiento",
                     "description": "Crea un nuevo movimiento de inventario y actualiza el stock del producto",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "requestBody": {
                         "required": True,
                         "content": {
@@ -480,6 +681,9 @@ def create_swagger_spec():
                         },
                         "400": {
                             "description": "Datos inválidos o stock insuficiente"
+                        },
+                        "401": {
+                            "description": "No autenticado"
                         },
                         "500": {
                             "description": "Error interno del servidor"
@@ -583,6 +787,11 @@ def create_swagger_spec():
                     "tags": ["products"],
                     "summary": "Actualiza un producto",
                     "description": "Actualiza un producto existente por su ID (actualización completa)",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "parameters": [
                         {
                             "name": "product_id",
@@ -618,6 +827,9 @@ def create_swagger_spec():
                         "400": {
                             "description": "Datos inválidos"
                         },
+                        "401": {
+                            "description": "No autenticado"
+                        },
                         "404": {
                             "description": "Producto no encontrado"
                         },
@@ -630,6 +842,11 @@ def create_swagger_spec():
                     "tags": ["products"],
                     "summary": "Actualiza parcialmente un producto",
                     "description": "Actualiza parcialmente un producto existente por su ID (solo los campos que se envían)",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "parameters": [
                         {
                             "name": "product_id",
@@ -665,6 +882,9 @@ def create_swagger_spec():
                         "400": {
                             "description": "Datos inválidos"
                         },
+                        "401": {
+                            "description": "No autenticado"
+                        },
                         "404": {
                             "description": "Producto no encontrado"
                         },
@@ -677,6 +897,11 @@ def create_swagger_spec():
                     "tags": ["products"],
                     "summary": "Elimina un producto",
                     "description": "Elimina un producto existente por su ID",
+                    "security": [
+                        {
+                            "bearerAuth": []
+                        }
+                    ],
                     "parameters": [
                         {
                             "name": "product_id",
@@ -690,7 +915,23 @@ def create_swagger_spec():
                     ],
                     "responses": {
                         "200": {
-                            "description": "Producto eliminado exitosamente"
+                            "description": "Producto eliminado exitosamente",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Producto eliminado correctamente"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "401": {
+                            "description": "No autenticado"
                         },
                         "404": {
                             "description": "Producto no encontrado"
@@ -728,7 +969,123 @@ def create_swagger_spec():
             }
         },
         "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT"
+                }
+            },
             "schemas": {
+                "UserRegister": {
+                    "type": "object",
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Correo electrónico del usuario (único)"
+                        },
+                        "full_name": {
+                            "type": "string",
+                            "description": "Nombre completo del usuario"
+                        },
+                        "password": {
+                            "type": "string",
+                            "format": "password",
+                            "description": "Contraseña (mínimo 8 caracteres)"
+                        },
+                        "role": {
+                            "type": "string",
+                            "enum": ["admin", "user"],
+                            "description": "Rol del usuario",
+                            "default": "user"
+                        }
+                    },
+                    "required": ["email", "full_name", "password"]
+                },
+                "UserLogin": {
+                    "type": "object",
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Correo electrónico del usuario"
+                        },
+                        "password": {
+                            "type": "string",
+                            "format": "password",
+                            "description": "Contraseña"
+                        }
+                    },
+                    "required": ["email", "password"]
+                },
+                "UserResponse": {
+                    "type": "object",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "example": "Usuario registrado exitosamente"
+                        },
+                        "user": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": "ID único del usuario"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "format": "email",
+                                    "description": "Correo electrónico del usuario"
+                                },
+                                "full_name": {
+                                    "type": "string",
+                                    "description": "Nombre completo del usuario"
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "enum": ["admin", "user"],
+                                    "description": "Rol del usuario"
+                                }
+                            }
+                        }
+                    }
+                },
+                "UserProfile": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "ID único del usuario"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Correo electrónico del usuario"
+                        },
+                        "full_name": {
+                            "type": "string",
+                            "description": "Nombre completo del usuario"
+                        },
+                        "role": {
+                            "type": "string",
+                            "enum": ["admin", "user"],
+                            "description": "Rol del usuario"
+                        },
+                        "last_login": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Fecha y hora del último inicio de sesión",
+                            "nullable": True
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Fecha y hora de creación",
+                            "nullable": True
+                        }
+                    }
+                },
                 "ProductBase": {
                     "type": "object",
                     "properties": {
@@ -1176,5 +1533,3 @@ def setup_swagger(app):
     )
 
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-
-    return app

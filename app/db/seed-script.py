@@ -11,7 +11,6 @@ from random import randint, choice
 
 from app.models import Product, Movement, Supplier, Location, Category
 
-# Asegurar que podemos importar desde el directorio raíz
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.db.base import engine, Base

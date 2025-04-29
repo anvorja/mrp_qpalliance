@@ -109,7 +109,7 @@ def get_products():
 
 @products_bp.route('', methods=['POST'])
 @protect_endpoint()
-def create_product():
+def create_product(current_user):
     """
     Crea un nuevo producto.
     """
@@ -200,7 +200,7 @@ def get_product(product_id: int):
 
 @products_bp.route('/<int:product_id>', methods=['PUT'])
 @protect_endpoint()
-def update_product(product_id: int):
+def update_product(current_user, product_id: int):
     """
     Actualiza completamente un producto existente.
     Requiere todos los campos del producto.
@@ -256,7 +256,7 @@ def update_product(product_id: int):
 
 @products_bp.route('/<int:product_id>', methods=['PATCH'])
 @protect_endpoint()
-def patch_product(product_id: int):
+def patch_product(current_user, product_id: int):
     """
     Actualiza parcialmente un producto existente.
     Solo requiere los campos que se desean actualizar.
@@ -312,7 +312,7 @@ def patch_product(product_id: int):
 
 @products_bp.route('/<int:product_id>', methods=['DELETE'])
 @protect_endpoint()
-def delete_product(product_id: int):
+def delete_product(current_user, product_id: int):
     """
     Elimina un producto por su ID.
     """
