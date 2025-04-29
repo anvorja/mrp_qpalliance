@@ -1,5 +1,7 @@
 # app/api/v1/__init__.py
 from flask import Blueprint
+
+from .endpoints.auth import auth_bp
 from .endpoints.products import products_bp
 from .endpoints.categories import categories_bp
 from .endpoints.locations import locations_bp
@@ -15,6 +17,7 @@ api_v1.register_blueprint(categories_bp, url_prefix='/categories')
 api_v1.register_blueprint(locations_bp, url_prefix='/locations')
 api_v1.register_blueprint(suppliers_bp, url_prefix='/suppliers')
 api_v1.register_blueprint(movements_bp, url_prefix='/movements')
+api_v1.register_blueprint(auth_bp, url_prefix='/auth')
 
 # Definir una ruta para verificar el estado de la API
 @api_v1.route('/health', methods=['GET'])

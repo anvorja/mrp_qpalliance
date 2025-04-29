@@ -8,7 +8,7 @@ import os
 config = context.config
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.models import Product, Category, Location, Supplier, Movement
+from app.models import Product, Category, Location, Supplier, Movement, User
 from app.db.base import Base
 
 

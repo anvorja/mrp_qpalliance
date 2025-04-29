@@ -30,7 +30,12 @@ def create_app():
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
     # CORS para permitir solicitudes desde el frontend
-    CORS(app, resources={r"/api/*": {"origins": os.getenv("CORS_ORIGINS", "*")}})
+    CORS(app,
+         resources={r"/api/*": {"origins": os.getenv("CORS_ORIGINS", "*")}},
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
+         )
 
     # Registrar blueprints de la API
     app.register_blueprint(api_v1)
